@@ -1,9 +1,24 @@
 <template>
   <div class="manager-project">
-    <div class="project-header">
-      <h1>{{ project.name }}</h1>
-      <p>{{ project.description }}</p>
-    </div>
+    <button @click="toggleDarkMode" class="dark-mode-toggle" title="Changer de thème">
+      <span v-if="isDark">☀️</span>
+      <span v-else>🌙</span>
+    </button>
+
+    <nav class="navbar">
+      <div class="navbar-brand">Gestion de Projets</div>
+      <div class="navbar-user">
+        <button @click="goBack" class="btn btn-back">Retour</button>
+        <span>{{ currentUser.name }}</span>
+        <button @click="logout" class="btn btn-logout">Déconnexion</button>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="project-header">
+        <h1>{{ project.name }}</h1>
+        <p>{{ project.description }}</p>
+      </div>
 
     <!-- Tableau de bord -->
     <div class="dashboard">
@@ -187,6 +202,7 @@
         </form>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -194,9 +210,14 @@
 import { useUserStore } from '../stores/userStore'
 import { useProjectStore } from '../stores/projectStore'
 import { useTaskStore } from '../stores/taskStore'
+import { useDarkMode } from '../composables/useDarkMode'
 
 export default {
   name: 'ManagerProject',
+  setup() {
+    const { isDark, toggleDarkMode, initDarkMode } = useDarkMode()
+    return { isDark, toggleDarkMode, initDarkMode }
+  },
   data() {
     return {
       userStore: useUserStore(),
@@ -304,19 +325,83 @@ export default {
     },
     getCreatorName(userId) {
       return this.getUserName(userId)
+    },
+    goBack() {
+      this.$router.push({ name: 'Home' })
+    },
+    logout() {
+      this.userStore.logout()
+      this.$router.push('/login')
     }
   },
   mounted() {
+    this.initDarkMode()
     this.loadProject()
   }
 }
 </script>
 
-<style scoped>
+<style>
 .manager-project {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.navbar {
+  background-color: #333;
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-back {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-back:hover {
+  background-color: #0b7dda;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.btn-logout {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-logout:hover {
+  background-color: #c82333;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px 20px;
 }
 
 .project-header {

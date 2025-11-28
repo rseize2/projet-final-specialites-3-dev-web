@@ -1,43 +1,54 @@
 <template>
   <div class="home-page">
-    <nav class="navbar">
+    <button @click="toggleDarkMode" class="dark-mode-toggle" title="Changer de thème">
+      <span v-if="isDark">☀️</span>
+      <span v-else>🌙</span>
+    </button>
+
+    <nav class="navbar fade-in">
       <div class="navbar-brand">Gestion de Projets</div>
       <div class="navbar-user">
         <span>{{ currentUser.name }}</span>
-        <button @click="logout" class="btn btn-logout">Déconnexion</button>
+        <button @click="logout" class="btn btn-logout smooth-hover">Déconnexion</button>
       </div>
     </nav>
 
     <div class="container">
-      <h1>Mes Projets</h1>
+      <h1 class="slide-in-left">Mes Projets</h1>
 
       <!-- Boutons de rôle pour dual-role users -->
-      <div v-if="hasDualRole" class="role-selector">
+      <div v-if="hasDualRole" class="role-selector scale-in">
         <button
           @click="viewMode = 'developer'"
           :class="{ active: viewMode === 'developer' }"
-          class="btn btn-role"
+          class="btn btn-role smooth-transition"
         >
           Mode Développeur
         </button>
         <button
           @click="viewMode = 'manager'"
           :class="{ active: viewMode === 'manager' }"
-          class="btn btn-role"
+          class="btn btn-role smooth-transition"
         >
           Mode Manager
         </button>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="isLoading" class="projects-grid">
+        <SkeletonCard v-for="n in 3" :key="n" />
+      </div>
+
       <!-- Vue Developer: projets avec tâches affectées -->
-      <div v-if="viewMode === 'developer'" class="projects-grid">
-        <div v-if="developerProjects.length === 0" class="no-projects">
+      <div v-else-if="viewMode === 'developer'" class="projects-grid">
+        <div v-if="developerProjects.length === 0" class="no-projects fade-in">
           Aucun projet avec tâches affectées
         </div>
         <div
-          v-for="project in developerProjects"
+          v-for="(project, index) in developerProjects"
           :key="project.id"
-          class="project-card"
+          class="project-card card-hover stagger-item"
+          :style="{ animationDelay: `${index * 0.1}s` }"
           @click="goToDeveloperProject(project.id)"
         >
           <h3>{{ project.name }}</h3>
@@ -126,15 +137,25 @@
 import { useUserStore } from '../stores/userStore'
 import { useProjectStore } from '../stores/projectStore'
 import { useTaskStore } from '../stores/taskStore'
+import SkeletonCard from '../components/SkeletonCard.vue'
+import { useDarkMode } from '../composables/useDarkMode'
 
 export default {
   name: 'HomePage',
+  components: {
+    SkeletonCard
+  },
+  setup() {
+    const { isDark, toggleDarkMode, initDarkMode } = useDarkMode()
+    return { isDark, toggleDarkMode, initDarkMode }
+  },
   data() {
     return {
       userStore: useUserStore(),
       projectStore: useProjectStore(),
       taskStore: useTaskStore(),
       viewMode: 'developer',
+      isLoading: true,
       newProject: {
         name: '',
         description: ''
@@ -159,7 +180,7 @@ export default {
   methods: {
     logout() {
       this.userStore.logout()
-      this.$router.push('/')
+      this.$router.push('/login')
     },
     goToDeveloperProject(projectId) {
       this.$router.push({ name: 'DeveloperProject', params: { projectId } })
@@ -207,13 +228,23 @@ export default {
         .filter(t => t.assignedTo.includes(this.currentUser.id)).length
     }
   },
-  mounted() {
+  async mounted() {
+    this.initDarkMode()
+
     if (!this.userStore.isAuthenticated()) {
       this.$router.push('/')
     } else {
+      // Simulate loading
+      this.isLoading = true
+
       // Charger les projets et tâches
       this.projectStore.loadProjects()
       this.taskStore.loadTasks()
+
+      // Simulate API delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 800))
+
+      this.isLoading = false
 
       // Définir le mode par défaut
       if (this.currentUser.roles.includes('manager') && !this.currentUser.roles.includes('developer')) {
@@ -224,7 +255,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .home-page {
   min-height: 100vh;
   background-color: #f5f5f5;
@@ -256,14 +287,16 @@ export default {
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.3s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .btn-logout:hover {
   background-color: #c82333;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 .container {
@@ -393,17 +426,36 @@ textarea.input {
 
 .project-card {
   background-color: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover::before {
+  transform: scaleX(1);
 }
 
 .project-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-color: #2196F3;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: #667eea;
+  transform: translateY(-4px);
 }
 
 .project-card-header {
@@ -475,5 +527,70 @@ textarea.input {
 
 .managed-by-me {
   border-left: 4px solid #28a745;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .navbar-user {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn-logout {
+    width: 100%;
+  }
+
+  .container {
+    padding: 20px 12px;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .role-selector {
+    flex-direction: column;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .project-card {
+    padding: 16px;
+  }
+
+  .project-card-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .project-footer {
+    flex-direction: column;
+  }
+
+  .create-project-section {
+    padding: 16px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
 }
 </style>

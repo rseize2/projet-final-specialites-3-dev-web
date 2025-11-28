@@ -1,0 +1,455 @@
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-card: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: #ddd;
+  --navbar-bg: #333333;
+  --navbar-text: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+}
+
+.dark-mode {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #0d0d0d;
+  --bg-card: #242424;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #707070;
+  --border-color: #3a3a3a;
+  --navbar-bg: #0d0d0d;
+  --navbar-text: #e0e0e0;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-hover: rgba(0, 0, 0, 0.5);
+  --input-bg: #2a2a2a;
+  --input-border: #3a3a3a;
+}
+
+.dark-mode {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark-mode .home-page,
+.dark-mode .developer-project,
+.dark-mode .manager-project {
+  background-color: var(--bg-secondary);
+}
+
+.dark-mode .navbar {
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
+}
+
+.dark-mode .project-card,
+.dark-mode .task-card,
+.dark-mode .stat-card,
+.dark-mode .create-project-section,
+.dark-mode .create-task,
+.dark-mode .login-container {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode .project-card h3,
+.dark-mode .task-card h3 {
+  color: var(--text-primary);
+}
+
+.dark-mode p,
+.dark-mode .project-card p,
+.dark-mode .task-description {
+  color: var(--text-secondary);
+}
+
+.dark-mode .input,
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--input-border);
+}
+
+.dark-mode .input:focus,
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus {
+  border-color: #667eea;
+}
+
+.dark-mode .project-card {
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.dark-mode .project-card:hover {
+  box-shadow: 0 8px 24px var(--shadow-hover);
+}
+
+.dark-mode .task-card {
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.dark-mode .task-card:hover {
+  box-shadow: 0 4px 16px var(--shadow-hover);
+}
+
+.dark-mode .project-header,
+.dark-mode .dashboard {
+  border-color: var(--border-color);
+}
+
+.dark-mode .no-projects,
+.dark-mode .no-tasks,
+.dark-mode .no-comments {
+  color: var(--text-muted);
+  background-color: var(--bg-card);
+}
+
+.dark-mode .task-meta {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+}
+
+.dark-mode .comment {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.dark-mode .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark-mode .modal-content {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.dark-mode label {
+  color: var(--text-primary);
+}
+
+.dark-mode .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+}
+
+.dark-mode .checkbox-label {
+  color: var(--text-secondary);
+}
+
+.dark-mode .checkbox-label:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .project-meta,
+.dark-mode .assigned-users,
+.dark-mode .deadline {
+  color: var(--text-secondary);
+}
+
+.dark-mode .tab-button {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.dark-mode .tab-button.active {
+  background-color: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.dark-mode .error-message {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #ff6b6b;
+  border-left-color: #e74c3c;
+}
+
+.dark-mode .login-page {
+  background: linear-gradient(135deg, #2d3561 0%, #5a3f7d 100%);
+}
+
+.dark-mode .progress-bar {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .password-strength {
+  color: var(--text-secondary);
+}
+
+.dark-mode .field-error {
+  color: #ff6b6b;
+}
+
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(102, 126, 234, 0.9);
+  border: none;
+  cursor: pointer;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 24px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode-toggle:hover {
+  background-color: rgba(102, 126, 234, 1);
+  transform: scale(1.1) rotate(20deg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .dark-mode-toggle {
+  background: rgba(118, 75, 162, 0.9);
+}
+
+.dark-mode .dark-mode-toggle:hover {
+  background-color: rgba(118, 75, 162, 1);
+}
+
+.dark-mode .task-management-card {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.dark-mode .task-header h4 {
+  color: var(--text-primary);
+}
+
+.dark-mode .task-info,
+.dark-mode .created-by {
+  color: var(--text-secondary);
+}
+
+.dark-mode .assignment-section {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.dark-mode .assignment-section h5,
+.dark-mode .comments-section h5 {
+  color: var(--text-primary);
+}
+
+.dark-mode .no-assigned {
+  color: var(--text-muted);
+}
+
+.dark-mode .assigned-user {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #64b5f6;
+}
+
+.dark-mode .btn-remove {
+  color: #64b5f6;
+}
+
+.dark-mode .btn-remove:hover {
+  color: #42a5f5;
+}
+
+.dark-mode .comments-section {
+  border-top-color: var(--border-color);
+}
+
+.dark-mode .modal {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark-mode .form-group label {
+  color: var(--text-primary);
+}
+
+.dark-mode .stat-card ul li {
+  color: var(--text-secondary);
+}
+
+.dark-mode .task-card-assigned {
+  border-left-color: #4CAF50;
+}
+
+.dark-mode .container h1,
+.dark-mode .container h2 {
+  color: var(--text-primary);
+}
+
+.dark-mode .project-header p {
+  color: var(--text-secondary);
+}
+
+.dark-mode .skeleton-card {
+  background-color: var(--bg-card);
+}
+
+.dark-mode .task-actions .btn,
+.dark-mode .project-actions .btn,
+.dark-mode .project-footer .btn {
+  color: white;
+}
+
+.dark-mode .btn-small {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.dark-mode .btn-take-role {
+  color: #64b5f6;
+  border-color: #64b5f6;
+}
+
+.dark-mode .btn-take-role:hover {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+.dark-mode .btn-remove-role {
+  color: #66bb6a;
+  border-color: #66bb6a;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dark-mode .managed-by-me {
+  border-left-color: #66bb6a;
+}
+
+.dark-mode .role-selector .btn-role {
+  background-color: var(--bg-card);
+  color: #64b5f6;
+  border-color: #64b5f6;
+}
+
+.dark-mode .role-selector .btn-role.active {
+  background-color: #2196F3;
+  color: white;
+}
+
+.dark-mode .role-selector .btn-role:hover {
+  background-color: #2196F3;
+  color: white;
+}
+
+.dark-mode .manager-view h2 {
+  color: var(--text-primary);
+}
+
+.dark-mode .tasks-list h3,
+.dark-mode .create-task h3 {
+  color: var(--text-primary);
+}
+
+.dark-mode small {
+  color: var(--text-muted);
+}
+
+.dark-mode .comment strong {
+  color: #64b5f6;
+}
+
+.dark-mode .strength-text {
+  color: var(--text-secondary);
+}
+
+.dark-mode .toast {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .toast-success {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #66bb6a;
+  border-left: 4px solid #66bb6a;
+}
+
+.dark-mode .login-container h1,
+.dark-mode .login-container h2 {
+  color: var(--text-primary) !important;
+}
+
+.dark-mode .login-container .form-group label {
+  color: var(--text-primary) !important;
+}
+
+.dark-mode .login-container .input,
+.dark-mode .login-container input,
+.dark-mode .login-container textarea {
+  background-color: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--input-border) !important;
+}
+
+.dark-mode .login-container .tab-button {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark-mode .login-container .tab-button.active {
+  background-color: #667eea !important;
+  color: white !important;
+  border-color: #667eea !important;
+}
+
+.dark-mode .dashboard h2 {
+  color: var(--text-primary);
+}
+
+.dark-mode .stat-card {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.dark-mode .stat-card h3 {
+  color: var(--text-primary);
+}
+
+.dark-mode .stat-card p {
+  color: var(--text-primary);
+}
+
+.dark-mode .stat-card ul {
+  color: var(--text-secondary);
+}
+
+.dark-mode .stat-card ul li {
+  color: var(--text-secondary);
+}
+
+.dark-mode .progress-bar {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .progress-fill {
+  background-color: #4CAF50;
+}
+
+.dark-mode .status-en-cours {
+  color: #FFC107;
+}
+
+.dark-mode .status-à-risque {
+  color: #FF9800;
+}
+
+.dark-mode .status-retard {
+  color: #DC3545;
+}

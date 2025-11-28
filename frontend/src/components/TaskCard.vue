@@ -1,8 +1,8 @@
 <template>
-  <div class="task-card" :class="{ 'task-card-assigned': isAssignedToCurrentUser }">
+  <div class="task-card smooth-transition" :class="{ 'task-card-assigned': isAssignedToCurrentUser }">
     <div class="task-header">
       <h3>{{ task.title }}</h3>
-      <span class="task-status" :class="'status-' + task.status.toLowerCase().replace(' ', '-')">
+      <span class="task-status smooth-transition" :class="'status-' + task.status.toLowerCase().replace(' ', '-')">
         {{ task.status }}
       </span>
     </div>
@@ -24,7 +24,7 @@
       <button
         v-if="isAssignedToCurrentUser && task.status === 'Non validé'"
         @click="markAsCompleted"
-        class="btn btn-primary"
+        class="btn btn-primary btn-ripple smooth-hover"
       >
         Marquer comme complétée
       </button>
@@ -41,19 +41,19 @@
       <button
         v-if="isManager && task.status === 'Complétée'"
         @click="validateTask"
-        class="btn btn-success"
+        class="btn btn-success btn-ripple smooth-hover"
       >
         Valider
       </button>
 
-      <button @click="toggleComments" class="btn btn-secondary">
+      <button @click="toggleComments" class="btn btn-secondary smooth-hover">
         Commentaires ({{ task.comments.length }})
       </button>
 
       <button
         v-if="isManager"
         @click="$emit('edit')"
-        class="btn btn-secondary"
+        class="btn btn-secondary smooth-hover"
       >
         Modifier
       </button>
@@ -61,33 +61,36 @@
       <button
         v-if="isManager"
         @click="$emit('delete')"
-        class="btn btn-danger"
+        class="btn btn-danger smooth-hover"
       >
         Supprimer
       </button>
     </div>
 
-    <div v-if="showComments" class="task-comments">
-      <div class="comments-list">
-        <div v-for="comment in task.comments" :key="comment.id" class="comment">
-          <strong>{{ comment.userName }}:</strong> {{ comment.content }}
-          <small>{{ formatDate(comment.createdAt) }}</small>
+    <transition name="slide-down">
+      <div v-if="showComments" class="task-comments">
+        <div class="comments-list">
+          <div v-for="(comment, index) in task.comments" :key="comment.id" class="comment fade-in" :style="{ animationDelay: `${index * 0.1}s` }">
+            <strong>{{ comment.userName }}:</strong> {{ comment.content }}
+            <small>{{ formatDate(comment.createdAt) }}</small>
+          </div>
+          <div v-if="task.comments.length === 0" class="no-comments">
+            Pas de commentaires
+          </div>
         </div>
-        <div v-if="task.comments.length === 0" class="no-comments">
-          Pas de commentaires
-        </div>
-      </div>
 
-      <div class="add-comment">
-        <input
-          v-model="newComment"
-          type="text"
-          placeholder="Ajouter un commentaire..."
-          class="input"
-        />
-        <button @click="addComment" class="btn btn-primary">Commenter</button>
+        <div class="add-comment">
+          <input
+            v-model="newComment"
+            type="text"
+            placeholder="Ajouter un commentaire..."
+            class="input focus-ring"
+            @keyup.enter="addComment"
+          />
+          <button @click="addComment" class="btn btn-primary btn-ripple smooth-hover">Commenter</button>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -168,21 +171,43 @@ export default {
 
 <style scoped>
 .task-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.task-card:hover::before {
+  transform: scaleY(1);
 }
 
 .task-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateX(4px);
 }
 
 .task-card-assigned {
   border-left: 4px solid #4CAF50;
+}
+
+.task-card-assigned::before {
+  display: none;
 }
 
 .task-header {
@@ -190,57 +215,65 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  gap: 12px;
 }
 
 .task-header h3 {
   margin: 0;
   font-size: 18px;
   color: #333;
+  flex: 1;
 }
 
 .task-status {
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .status-non-validé {
-  background-color: #fff3cd;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
   color: #856404;
 }
 
 .status-en-cours {
-  background-color: #cce5ff;
+  background: linear-gradient(135deg, #cce5ff 0%, #99ccff 100%);
   color: #004085;
 }
 
 .status-complétée {
-  background-color: #d4edda;
+  background: linear-gradient(135deg, #d4edda 0%, #a8d5ba 100%);
   color: #155724;
 }
 
 .status-validée {
-  background-color: #d1ecf1;
+  background: linear-gradient(135deg, #d1ecf1 0%, #a3d9e4 100%);
   color: #0c5460;
 }
 
 .task-description {
   color: #666;
   margin: 12px 0;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .task-meta {
-  margin: 12px 0;
+  margin: 16px 0;
   font-size: 14px;
   color: #555;
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
 }
 
 .deadline {
   margin-bottom: 8px;
   color: #d32f2f;
+  font-weight: 500;
 }
 
 .assigned-users {
@@ -251,26 +284,29 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .btn {
-  padding: 8px 12px;
+  padding: 10px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
-  background-color: #2196F3;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #0b7dda;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
@@ -280,60 +316,85 @@ export default {
 
 .btn-secondary:hover {
   background-color: #5a6268;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  transform: translateY(-2px);
 }
 
 .btn-success {
-  background-color: #28a745;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
   color: white;
 }
 
 .btn-success:hover {
-  background-color: #218838;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  transform: translateY(-2px);
 }
 
 .btn-danger {
-  background-color: #dc3545;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
 }
 
 .btn-danger:hover {
-  background-color: #c82333;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+  transform: translateY(-2px);
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .task-comments {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e9ecef;
+}
+
+.slide-down-enter-active, .slide-down-leave-active {
+  transition: all 0.3s ease;
+  max-height: 500px;
+}
+
+.slide-down-enter-from, .slide-down-leave-to {
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 .comments-list {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   max-height: 300px;
   overflow-y: auto;
 }
 
 .comment {
-  padding: 8px;
-  margin-bottom: 8px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
   font-size: 13px;
+  border-left: 3px solid #667eea;
+}
+
+.comment strong {
+  color: #667eea;
 }
 
 .comment small {
   display: block;
   color: #999;
-  margin-top: 4px;
+  margin-top: 6px;
+  font-size: 11px;
 }
 
 .no-comments {
   color: #999;
   font-style: italic;
+  text-align: center;
+  padding: 20px;
 }
 
 .add-comment {
@@ -343,15 +404,40 @@ export default {
 
 .input {
   flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
   font-size: 14px;
+  transition: all 0.2s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: #2196F3;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-status {
+    align-self: flex-start;
+  }
+
+  .task-actions {
+    flex-direction: column;
+  }
+
+  .task-actions .btn {
+    width: 100%;
+  }
+
+  .add-comment {
+    flex-direction: column;
+  }
 }
 </style>
