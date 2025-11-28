@@ -1,210 +1,483 @@
 <template>
-  <div class="manager-project">
-    <div class="project-header">
-      <h1>{{ project.name }}</h1>
-      <p>{{ project.description }}</p>
-    </div>
+  <div class="page-projet-manager">
+    <!-- Navbar -->
+    <NavBar :utilisateur="utilisateurActuel" @deconnexion="seDeconnecter" />
 
-    <!-- Tableau de bord -->
-    <div class="dashboard">
-      <h2>Tableau de bord</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h3>Progression</h3>
-          <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: stats.progress + '%' }"></div>
+    <main class="conteneur-projet">
+      <!-- En-tête du projet -->
+      <header class="entete-projet">
+        <button 
+          @click="retourAccueil" 
+          class="bouton-retour"
+          aria-label="Retour à l'accueil"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Retour</span>
+        </button>
+
+        <div class="info-projet">
+          <div class="badge-role">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Mode Manager</span>
           </div>
-          <p>{{ stats.progress }}%</p>
+          <h1 class="titre-projet">{{ projet.name }}</h1>
+          <p class="description-projet">{{ projet.description || 'Aucune description disponible' }}</p>
         </div>
-        <div class="stat-card">
-          <h3>Statut du projet</h3>
-          <p :class="'status-' + stats.status.toLowerCase().replace(' ', '-')">
-            {{ stats.status }}
-          </p>
-        </div>
-        <div class="stat-card">
-          <h3>Tâches</h3>
-          <ul>
-            <li>Total: {{ stats.total }}</li>
-            <li>Validées: {{ stats.validated }}</li>
-            <li>Complétées: {{ stats.completed }}</li>
-            <li>En cours: {{ stats.inProgress }}</li>
-            <li>Non validées: {{ stats.notValidated }}</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+      </header>
 
-    <!-- Gestion des tâches -->
-    <div class="tasks-management">
-      <h2>Gestion des tâches</h2>
+      <!-- Tableau de bord -->
+      <section class="section-dashboard" aria-labelledby="titre-dashboard">
+        <h2 id="titre-dashboard" class="titre-section">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+            <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+            <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+            <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Tableau de bord
+        </h2>
 
-      <!-- Créer une tâche -->
-      <div class="create-task">
-        <h3>Créer une nouvelle tâche</h3>
-        <form @submit.prevent="createNewTask">
-          <div class="form-group">
-            <label>Titre</label>
-            <input v-model="newTask.title" type="text" required class="input" />
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea v-model="newTask.description" rows="4" class="input"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Deadline (optionnel)</label>
-            <input v-model="newTask.deadline" type="date" class="input" />
-          </div>
-          <button type="submit" class="btn btn-primary">Créer la tâche</button>
-        </form>
-      </div>
-
-      <!-- Liste des tâches avec actions manager -->
-      <div class="tasks-list">
-        <h3>Tâches du projet</h3>
-        <div v-if="tasks.length === 0" class="no-tasks">
-          Aucune tâche dans ce projet
-        </div>
-        <div v-for="task in tasks" :key="task.id" class="task-management-card">
-          <div class="task-header">
-            <h4>{{ task.title }}</h4>
-            <span class="task-status" :class="'status-' + task.status.toLowerCase().replace(' ', '-')">
-              {{ task.status }}
-            </span>
-          </div>
-
-          <p class="task-description">{{ task.description }}</p>
-
-          <div class="task-info">
-            <div v-if="task.deadline" class="deadline">
-              <strong>Deadline:</strong> {{ formatDate(task.deadline) }}
+        <div class="grille-statistiques">
+          <!-- Carte Progression -->
+          <div class="carte-stat progression">
+            <div class="entete-stat">
+              <h3>Progression globale</h3>
+              <span class="valeur-principale">{{ statistiques.progress }}%</span>
             </div>
-            <div class="created-by">
-              <strong>Créée par:</strong> {{ getCreatorName(task.createdBy) }}
+            <div class="barre-progression">
+              <div 
+                class="remplissage-progression" 
+                :style="{ width: statistiques.progress + '%' }"
+                role="progressbar"
+                :aria-valuenow="statistiques.progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
             </div>
           </div>
 
-          <!-- Assigner/Désassigner des utilisateurs -->
-          <div class="assignment-section">
-            <h5>Assigner des personnes</h5>
-            <div class="assigned-list">
-              <div v-if="task.assignedTo.length === 0" class="no-assigned">
-                Personne non assignée
+          <!-- Carte Statut -->
+          <div class="carte-stat statut">
+            <h3>Statut du projet</h3>
+            <div class="badge-statut-projet" :class="classeStatutProjet">
+              <svg class="icone-statut-projet" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" fill="currentColor"/>
+              </svg>
+              {{ statistiques.status }}
+            </div>
+          </div>
+
+          <!-- Carte Tâches -->
+          <div class="carte-stat taches">
+            <h3>Répartition des tâches</h3>
+            <div class="liste-stats">
+              <div class="ligne-stat">
+                <span class="label-stat">Total</span>
+                <span class="valeur-stat total">{{ statistiques.total }}</span>
               </div>
-              <div v-else>
-                <span v-for="userId in task.assignedTo" :key="userId" class="assigned-user">
-                  {{ getUserName(userId) }}
-                  <button
-                    @click="unassignUser(task.id, userId)"
-                    class="btn-remove"
-                    title="Retirer"
-                  >
-                    ×
-                  </button>
-                </span>
+              <div class="ligne-stat">
+                <span class="label-stat">Validées</span>
+                <span class="valeur-stat validee">{{ statistiques.validated }}</span>
+              </div>
+              <div class="ligne-stat">
+                <span class="label-stat">Complétées</span>
+                <span class="valeur-stat completee">{{ statistiques.completed }}</span>
+              </div>
+              <div class="ligne-stat">
+                <span class="label-stat">En cours</span>
+                <span class="valeur-stat en-cours">{{ statistiques.inProgress }}</span>
+              </div>
+              <div class="ligne-stat">
+                <span class="label-stat">Non validées</span>
+                <span class="valeur-stat non-validee">{{ statistiques.notValidated }}</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div class="assign-form">
-              <select v-model="selectedUserForTask[task.id]" class="input">
-                <option value="">Sélectionner un utilisateur...</option>
-                <option v-for="user in availableUsers" :key="user.id" :value="user.id">
-                  {{ user.name }}
-                </option>
-              </select>
-              <button
-                @click="assignUser(task.id)"
-                class="btn btn-secondary"
-              >
-                Assigner
+      <!-- Section création de tâche -->
+      <section class="section-creation-tache">
+        <button 
+          v-if="!afficherFormulaireCreation"
+          @click="afficherFormulaireCreation = true"
+          class="bouton-nouvelle-tache"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Nouvelle tâche</span>
+        </button>
+
+        <div v-else class="carte-formulaire">
+          <div class="entete-formulaire">
+            <h2>Créer une nouvelle tâche</h2>
+            <button 
+              @click="annulerCreation"
+              class="bouton-fermer"
+              aria-label="Fermer le formulaire"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <form @submit.prevent="creerNouvelleTache" class="formulaire-tache">
+            <div class="groupe-champ">
+              <label for="titre-tache-manager" class="label-champ">
+                Titre de la tâche
+              </label>
+              <input
+                id="titre-tache-manager"
+                v-model="nouvelleTache.titre"
+                type="text"
+                required
+                class="input-champ"
+                placeholder="Ex: Implémenter la fonctionnalité X"
+                aria-required="true"
+              />
+            </div>
+
+            <div class="groupe-champ">
+              <label for="description-tache-manager" class="label-champ">
+                Description
+              </label>
+              <textarea
+                id="description-tache-manager"
+                v-model="nouvelleTache.description"
+                rows="4"
+                class="input-champ textarea-champ"
+                placeholder="Décrivez la tâche en détail..."
+              ></textarea>
+            </div>
+
+            <div class="groupe-champ">
+              <label for="deadline-tache-manager" class="label-champ">
+                Date limite (optionnel)
+              </label>
+              <div class="input-avec-icone">
+                <svg class="icone-input" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <input
+                  id="deadline-tache-manager"
+                  v-model="nouvelleTache.deadline"
+                  type="date"
+                  class="input-champ avec-icone"
+                />
+              </div>
+            </div>
+
+            <div class="actions-formulaire">
+              <button type="button" @click="annulerCreation" class="bouton-secondaire">
+                Annuler
+              </button>
+              <button type="submit" class="bouton-primaire">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Créer la tâche</span>
               </button>
             </div>
-          </div>
+          </form>
+        </div>
+      </section>
 
-          <!-- Actions -->
-          <div class="task-actions">
-            <button
-              v-if="task.status === 'Complétée'"
-              @click="validateTask(task.id)"
-              class="btn btn-success"
-            >
-              Valider
-            </button>
+      <!-- Liste des tâches -->
+      <section class="section-taches-manager" aria-labelledby="titre-taches-manager">
+        <div class="entete-section">
+          <h2 id="titre-taches-manager" class="titre-section">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Gestion des tâches
+          </h2>
+          <span class="badge-compteur-section">{{ taches.length }}</span>
+        </div>
 
-            <button
-              @click="editTask(task)"
-              class="btn btn-secondary"
-            >
-              Modifier
-            </button>
+        <div v-if="taches.length === 0" class="etat-vide">
+          <svg class="icone-vide" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 9h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <h3>Aucune tâche créée</h3>
+          <p>Commencez par créer votre première tâche pour ce projet.</p>
+        </div>
 
-            <button
-              @click="deleteTask(task.id)"
-              class="btn btn-danger"
-            >
-              Supprimer
-            </button>
-          </div>
-
-          <!-- Commentaires -->
-          <div class="comments-section">
-            <h5>Commentaires ({{ task.comments.length }})</h5>
-            <div class="comments-list">
-              <div v-for="comment in task.comments" :key="comment.id" class="comment">
-                <strong>{{ comment.userName }}:</strong> {{ comment.content }}
-                <small>{{ formatDate(comment.createdAt) }}</small>
+        <div v-else class="liste-taches-manager">
+          <article
+            v-for="tache in taches"
+            :key="tache.id"
+            class="carte-tache-manager"
+          >
+            <!-- En-tête tâche -->
+            <header class="entete-tache-manager">
+              <div class="info-tache-principale">
+                <h3 class="titre-tache-manager">{{ tache.title }}</h3>
+                <span class="badge-statut-tache" :class="obtenirClasseStatut(tache.status)">
+                  <svg class="icone-statut-tache" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" fill="currentColor"/>
+                  </svg>
+                  {{ tache.status }}
+                </span>
               </div>
-              <div v-if="task.comments.length === 0" class="no-comments">
-                Pas de commentaires
+            </header>
+
+            <!-- Description -->
+            <p class="description-tache-manager">{{ tache.description }}</p>
+
+            <!-- Métadonnées -->
+            <div class="metadonnees-tache-manager">
+              <div v-if="tache.deadline" class="meta-item-manager deadline-manager">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span><strong>Échéance:</strong> {{ formaterDate(tache.deadline) }}</span>
+              </div>
+              <div class="meta-item-manager">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span><strong>Créée par:</strong> {{ obtenirNomCreateur(tache.createdBy) }}</span>
               </div>
             </div>
-          </div>
+
+            <!-- Section assignation -->
+            <div class="section-assignation">
+              <h4 class="titre-assignation">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Personnes assignées
+              </h4>
+
+              <div class="liste-assignes">
+                <div v-if="tache.assignedTo.length === 0" class="aucun-assigne">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <span>Personne n'est assigné</span>
+                </div>
+                <div v-else class="badges-assignes">
+                  <span 
+                    v-for="idUtilisateur in tache.assignedTo" 
+                    :key="idUtilisateur" 
+                    class="badge-assigne"
+                  >
+                    <span class="nom-assigne">{{ obtenirNomUtilisateur(idUtilisateur) }}</span>
+                    <button
+                      @click="desassignerUtilisateur(tache.id, idUtilisateur)"
+                      class="bouton-retirer"
+                      :aria-label="`Retirer ${obtenirNomUtilisateur(idUtilisateur)}`"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </span>
+                </div>
+              </div>
+
+              <form @submit.prevent="assignerUtilisateur(tache.id)" class="formulaire-assignation">
+                <select 
+                  v-model="utilisateurSelectionne[tache.id]" 
+                  class="select-utilisateur"
+                  :aria-label="`Sélectionner un utilisateur à assigner à ${tache.title}`"
+                >
+                  <option value="">Sélectionner un utilisateur...</option>
+                  <option 
+                    v-for="utilisateur in utilisateursDisponibles" 
+                    :key="utilisateur.id" 
+                    :value="utilisateur.id"
+                  >
+                    {{ utilisateur.name }}
+                  </option>
+                </select>
+                <button
+                  type="submit"
+                  class="bouton-assigner"
+                  :disabled="!utilisateurSelectionne[tache.id]"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Assigner</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-tache-manager">
+              <button
+                v-if="tache.status === 'Complétée'"
+                @click="validerTache(tache.id)"
+                class="bouton-action success"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Valider</span>
+              </button>
+
+              <button
+                @click="modifierTache(tache)"
+                class="bouton-action secondaire"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Modifier</span>
+              </button>
+
+              <button
+                @click="supprimerTache(tache.id)"
+                class="bouton-action danger"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Supprimer</span>
+              </button>
+            </div>
+
+            <!-- Commentaires -->
+            <details class="section-commentaires-manager">
+              <summary class="titre-commentaires-manager">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Commentaires ({{ tache.comments.length }})</span>
+              </summary>
+
+              <div class="liste-commentaires-manager">
+                <div v-if="tache.comments.length === 0" class="aucun-commentaire-manager">
+                  Aucun commentaire
+                </div>
+                <div
+                  v-for="commentaire in tache.comments"
+                  :key="commentaire.id"
+                  class="commentaire-manager"
+                >
+                  <div class="entete-commentaire-manager">
+                    <strong>{{ commentaire.userName }}</strong>
+                    <time>{{ formaterDate(commentaire.createdAt) }}</time>
+                  </div>
+                  <p>{{ commentaire.content }}</p>
+                </div>
+              </div>
+            </details>
+          </article>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
     <!-- Modal d'édition -->
-    <div v-if="editingTaskId" class="modal">
-      <div class="modal-content">
-        <h3>Modifier la tâche</h3>
-        <form @submit.prevent="updateTask">
-          <div class="form-group">
-            <label>Titre</label>
-            <input v-model="editingTask.title" type="text" required class="input" />
+    <transition name="modal-fade">
+      <div v-if="idTacheEnEdition" class="overlay-modal" @click="annulerEdition">
+        <div class="conteneur-modal" @click.stop>
+          <div class="entete-modal">
+            <h2>Modifier la tâche</h2>
+            <button 
+              @click="annulerEdition"
+              class="bouton-fermer-modal"
+              aria-label="Fermer"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea v-model="editingTask.description" rows="4" class="input"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Deadline</label>
-            <input v-model="editingTask.deadline" type="date" class="input" />
-          </div>
-          <div class="modal-actions">
-            <button type="submit" class="btn btn-primary">Sauvegarder</button>
-            <button type="button" @click="cancelEdit" class="btn btn-secondary">Annuler</button>
-          </div>
-        </form>
+
+          <form @submit.prevent="mettreAJourTache" class="formulaire-modal">
+            <div class="groupe-champ">
+              <label for="titre-edition" class="label-champ">
+                Titre de la tâche
+              </label>
+              <input
+                id="titre-edition"
+                v-model="tacheEnEdition.title"
+                type="text"
+                required
+                class="input-champ"
+              />
+            </div>
+
+            <div class="groupe-champ">
+              <label for="description-edition" class="label-champ">
+                Description
+              </label>
+              <textarea
+                id="description-edition"
+                v-model="tacheEnEdition.description"
+                rows="4"
+                class="input-champ textarea-champ"
+              ></textarea>
+            </div>
+
+            <div class="groupe-champ">
+              <label for="deadline-edition" class="label-champ">
+                Date limite
+              </label>
+              <input
+                id="deadline-edition"
+                v-model="tacheEnEdition.deadline"
+                type="date"
+                class="input-champ"
+              />
+            </div>
+
+            <div class="actions-modal">
+              <button type="button" @click="annulerEdition" class="bouton-secondaire">
+                Annuler
+              </button>
+              <button type="submit" class="bouton-primaire">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M17 21v-8H7v8M7 3v5h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Sauvegarder</span>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import NavBar from '../components/NavBar.vue'
 import { useUserStore } from '../stores/userStore'
 import { useProjectStore } from '../stores/projectStore'
 import { useTaskStore } from '../stores/taskStore'
 
 export default {
   name: 'ManagerProject',
+  components: {
+    NavBar
+  },
   data() {
     return {
       userStore: useUserStore(),
       projectStore: useProjectStore(),
       taskStore: useTaskStore(),
-      project: {},
-      tasks: [],
-      stats: {
+      projet: {},
+      taches: [],
+      statistiques: {
         total: 0,
         validated: 0,
         completed: 0,
@@ -213,500 +486,1411 @@ export default {
         progress: 0,
         status: 'En cours'
       },
-      newTask: {
-        title: '',
+      nouvelleTache: {
+        titre: '',
         description: '',
         deadline: null
       },
-      selectedUserForTask: {},
-      editingTaskId: null,
-      editingTask: {}
+      utilisateurSelectionne: {},
+      idTacheEnEdition: null,
+      tacheEnEdition: {},
+      afficherFormulaireCreation: false
     }
   },
   computed: {
-    currentUser() {
+    utilisateurActuel() {
       return this.userStore.getCurrentUser()
     },
-    availableUsers() {
-      return this.userStore.users.filter(u => u.id !== this.currentUser.id)
+    utilisateursDisponibles() {
+      return this.userStore.users.filter(u => u.id !== this.utilisateurActuel.id)
+    },
+    classeStatutProjet() {
+      const mapStatuts = {
+        'En cours': 'statut-projet-en-cours',
+        'À risque': 'statut-projet-risque',
+        'Retard': 'statut-projet-retard',
+        'Terminé': 'statut-projet-termine'
+      }
+      return mapStatuts[this.statistiques.status] || 'statut-projet-defaut'
     }
   },
   methods: {
-    loadProject() {
-      const projectId = this.$route.params.projectId
-      this.project = this.projectStore.getProjectById(projectId) || {}
-      this.refreshTasks()
+    seDeconnecter() {
+      this.userStore.logout()
+      this.$router.push('/')
     },
-    refreshTasks() {
-      const projectId = this.$route.params.projectId
-      this.tasks = this.taskStore.getTasksByProject(projectId)
-      this.stats = this.taskStore.getProjectStats(projectId)
+    retourAccueil() {
+      this.$router.push({ name: 'Home' })
     },
-    createNewTask() {
-      if (this.newTask.title.trim()) {
-        const projectId = this.$route.params.projectId
+    chargerProjet() {
+      const idProjet = this.$route.params.projectId
+      this.projet = this.projectStore.getProjectById(idProjet) || {}
+      this.rafraichirTaches()
+    },
+    rafraichirTaches() {
+      const idProjet = this.$route.params.projectId
+      this.taches = this.taskStore.getTasksByProject(idProjet)
+      this.statistiques = this.taskStore.getProjectStats(idProjet)
+    },
+    creerNouvelleTache() {
+      if (this.nouvelleTache.titre.trim()) {
+        const idProjet = this.$route.params.projectId
         this.taskStore.createTask(
-          projectId,
-          this.newTask.title,
-          this.newTask.description,
-          this.currentUser.id,
-          this.newTask.deadline || null
+          idProjet,
+          this.nouvelleTache.titre,
+          this.nouvelleTache.description,
+          this.utilisateurActuel.id,
+          this.nouvelleTache.deadline || null
         )
-        this.newTask = { title: '', description: '', deadline: null }
-        this.refreshTasks()
+        this.nouvelleTache = { titre: '', description: '', deadline: null }
+        this.afficherFormulaireCreation = false
+        this.rafraichirTaches()
       }
     },
-    validateTask(taskId) {
-      if (this.taskStore.validateTask(taskId)) {
-        this.refreshTasks()
+    annulerCreation() {
+      this.nouvelleTache = { titre: '', description: '', deadline: null }
+      this.afficherFormulaireCreation = false
+    },
+    validerTache(idTache) {
+      if (this.taskStore.validateTask(idTache)) {
+        this.rafraichirTaches()
       }
     },
-    assignUser(taskId) {
-      const userId = this.selectedUserForTask[taskId]
-      if (userId) {
-        this.taskStore.assignUserToTask(taskId, userId)
-        this.selectedUserForTask[taskId] = ''
-        this.refreshTasks()
+    assignerUtilisateur(idTache) {
+      const idUtilisateur = this.utilisateurSelectionne[idTache]
+      if (idUtilisateur) {
+        this.taskStore.assignUserToTask(idTache, idUtilisateur)
+        this.utilisateurSelectionne[idTache] = ''
+        this.rafraichirTaches()
       }
     },
-    unassignUser(taskId, userId) {
-      this.taskStore.unassignUserFromTask(taskId, userId)
-      this.refreshTasks()
+    desassignerUtilisateur(idTache, idUtilisateur) {
+      this.taskStore.unassignUserFromTask(idTache, idUtilisateur)
+      this.rafraichirTaches()
     },
-    editTask(task) {
-      this.editingTaskId = task.id
-      this.editingTask = { ...task }
+    modifierTache(tache) {
+      this.idTacheEnEdition = tache.id
+      this.tacheEnEdition = { ...tache }
     },
-    updateTask() {
-      this.taskStore.updateTask(this.editingTaskId, this.editingTask)
-      this.editingTaskId = null
-      this.editingTask = {}
-      this.refreshTasks()
+    mettreAJourTache() {
+      this.taskStore.updateTask(this.idTacheEnEdition, this.tacheEnEdition)
+      this.idTacheEnEdition = null
+      this.tacheEnEdition = {}
+      this.rafraichirTaches()
     },
-    cancelEdit() {
-      this.editingTaskId = null
-      this.editingTask = {}
+    annulerEdition() {
+      this.idTacheEnEdition = null
+      this.tacheEnEdition = {}
     },
-    deleteTask(taskId) {
-      if (confirm('Êtes-vous sûr de vouloir supprimer cette tâche?')) {
-        this.taskStore.deleteTask(taskId)
-        this.refreshTasks()
+    supprimerTache(idTache) {
+      if (confirm('Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.')) {
+        this.taskStore.deleteTask(idTache)
+        this.rafraichirTaches()
       }
     },
-    formatDate(dateString) {
+    formaterDate(dateString) {
       if (!dateString) return 'N/A'
       const date = new Date(dateString)
-      return date.toLocaleDateString('fr-FR')
+      return date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })
     },
-    getUserName(userId) {
-      const user = this.userStore.getUserById(userId)
-      return user ? user.name : 'Inconnu'
+    obtenirNomUtilisateur(idUtilisateur) {
+      const utilisateur = this.userStore.getUserById(idUtilisateur)
+      return utilisateur ? utilisateur.name : 'Inconnu'
     },
-    getCreatorName(userId) {
-      return this.getUserName(userId)
+    obtenirNomCreateur(idUtilisateur) {
+      return this.obtenirNomUtilisateur(idUtilisateur)
+    },
+    obtenirClasseStatut(statut) {
+      const mapStatuts = {
+        'Non validé': 'statut-non-valide',
+        'En cours': 'statut-en-cours',
+        'Complétée': 'statut-completee',
+        'Validée': 'statut-validee'
+      }
+      return mapStatuts[statut] || 'statut-defaut'
     }
   },
   mounted() {
-    this.loadProject()
+    this.chargerProjet()
   }
 }
 </script>
 
 <style scoped>
-.manager-project {
+.page-projet-manager {
+  min-height: 100vh;
+  background-color: #F9F9F9;
+}
+
+.conteneur-projet {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 2.5rem 1.5rem;
 }
 
-.project-header {
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #ddd;
+/* En-tête du projet */
+.entete-projet {
+  margin-bottom: 2.5rem;
 }
 
-.project-header h1 {
-  margin: 0 0 10px 0;
-  color: #333;
+.bouton-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background-color: white;
+  color: #676767;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  margin-bottom: 1.5rem;
 }
 
-.project-header p {
+.bouton-retour:hover {
+  background-color: #F9F9F9;
+  border-color: #D0D0D0;
+  color: #1A1A1A;
+}
+
+.bouton-retour:focus-visible {
+  outline: 2.5px solid #1A1A1A;
+  outline-offset: 2px;
+}
+
+.info-projet {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.badge-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #D1FAE5;
+  color: #059669;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.titre-projet {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.03em;
+}
+
+.description-projet {
+  font-size: 1rem;
+  color: #676767;
+  line-height: 1.6;
   margin: 0;
-  color: #666;
 }
 
-.dashboard {
-  margin-bottom: 40px;
-  padding-bottom: 30px;
-  border-bottom: 2px solid #eee;
+/* Dashboard */
+.section-dashboard {
+  margin-bottom: 2.5rem;
 }
 
-.dashboard h2 {
-  color: #333;
-  margin-bottom: 20px;
+.titre-section {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 1.5rem 0;
 }
 
-.stats-grid {
+.titre-section svg {
+  color: #676767;
+}
+
+.grille-statistiques {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  gap: 1.5rem;
 }
 
-.stat-card {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+.carte-stat {
+  background-color: white;
+  padding: 1.75rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
 }
 
-.stat-card h3 {
-  margin-top: 0;
-  color: #333;
+.carte-stat:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
-.progress-bar {
-  width: 100%;
-  height: 20px;
-  background-color: #eee;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: #4CAF50;
-  transition: width 0.3s ease;
-}
-
-.stat-card p {
-  margin: 10px 0 0 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #2196F3;
-}
-
-.status-en-cours {
-  color: #FFC107;
-}
-
-.status-à-risque {
-  color: #FF9800;
-}
-
-.status-retard {
-  color: #DC3545;
-}
-
-.stat-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 0 0;
-}
-
-.stat-card li {
-  padding: 4px 0;
-  color: #666;
-}
-
-.tasks-management h2 {
-  color: #333;
-  margin-bottom: 20px;
-  margin-top: 30px;
-}
-
-.create-task {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  margin-bottom: 30px;
-}
-
-.create-task h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
+.carte-stat h3 {
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #333;
+  color: #676767;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  font-family: inherit;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #2196F3;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
-}
-
-textarea.input {
-  resize: vertical;
-}
-
-.btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background-color: #2196F3;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #0b7dda;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-.btn-success {
-  background-color: #28a745;
-  color: white;
-}
-
-.btn-success:hover {
-  background-color: #218838;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-}
-
-.tasks-list h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.no-tasks {
-  padding: 20px;
-  text-align: center;
-  color: #999;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-}
-
-.task-management-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.task-header {
+.entete-stat {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
 }
 
-.task-header h4 {
+.entete-stat h3 {
   margin: 0;
-  color: #333;
 }
 
-.task-status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
+.valeur-principale {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1A1A1A;
 }
 
-.status-non-validé {
-  background-color: #fff3cd;
-  color: #856404;
+.barre-progression {
+  width: 100%;
+  height: 12px;
+  background-color: #F0F0F0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
 }
 
-.status-complétée {
-  background-color: #d4edda;
-  color: #155724;
+.remplissage-progression {
+  height: 100%;
+  background: linear-gradient(90deg, #2EA043 0%, #4CAF50 100%);
+  transition: width 0.5s ease;
+  border-radius: 6px;
 }
 
-.status-validée {
-  background-color: #d1ecf1;
-  color: #0c5460;
-}
-
-.task-description {
-  color: #666;
-  margin: 12px 0;
-}
-
-.task-info {
-  margin: 12px 0;
-  font-size: 14px;
-  color: #555;
-}
-
-.deadline {
-  color: #d32f2f;
-}
-
-.assignment-section {
-  margin: 16px 0;
-  padding: 12px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-}
-
-.assignment-section h5 {
-  margin-top: 0;
-  color: #333;
-}
-
-.assigned-list {
-  margin-bottom: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.no-assigned {
-  color: #999;
-  font-style: italic;
-}
-
-.assigned-user {
-  background-color: #e3f2fd;
-  color: #1976d2;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 13px;
+.badge-statut-projet {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
-.btn-remove {
+.icone-statut-projet {
+  flex-shrink: 0;
+}
+
+.statut-projet-en-cours {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.statut-projet-en-cours .icone-statut-projet {
+  color: #3B82F6;
+}
+
+.statut-projet-risque {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.statut-projet-risque .icone-statut-projet {
+  color: #F59E0B;
+}
+
+.statut-projet-retard {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.statut-projet-retard .icone-statut-projet {
+  color: #EF4444;
+}
+
+.statut-projet-termine {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.statut-projet-termine .icone-statut-projet {
+  color: #10B981;
+}
+
+.liste-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ligne-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.ligne-stat:last-child {
+  border-bottom: none;
+}
+
+.label-stat {
+  font-size: 0.875rem;
+  color: #676767;
+}
+
+.valeur-stat {
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+}
+
+.valeur-stat.total {
+  color: #1A1A1A;
+  background-color: #F0F0F0;
+}
+
+.valeur-stat.validee {
+  color: #059669;
+  background-color: #D1FAE5;
+}
+
+.valeur-stat.completee {
+  color: #0969DA;
+  background-color: #DBEAFE;
+}
+
+.valeur-stat.en-cours {
+  color: #92400E;
+  background-color: #FEF3C7;
+}
+
+.valeur-stat.non-validee {
+  color: #991B1B;
+  background-color: #FEE2E2;
+}
+
+/* Section création (même style que DeveloperProject) */
+.section-creation-tache {
+  margin-bottom: 2.5rem;
+}
+
+.bouton-nouvelle-tache {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.25rem;
+  background-color: #1A1A1A;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bouton-nouvelle-tache:hover {
+  background-color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.bouton-nouvelle-tache:active {
+  transform: translateY(0);
+}
+
+.bouton-nouvelle-tache:focus-visible {
+  outline: 3px solid rgba(26, 26, 26, 0.4);
+  outline-offset: 3px;
+}
+
+.carte-formulaire {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.entete-formulaire {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.entete-formulaire h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.bouton-fermer {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
   background: none;
   border: none;
-  color: #1976d2;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-  padding: 0;
-  font-weight: bold;
+  color: #676767;
+  transition: all 0.25s ease;
 }
 
-.btn-remove:hover {
-  color: #0d47a1;
+.bouton-fermer:hover {
+  background-color: #F9F9F9;
+  color: #1A1A1A;
 }
 
-.assign-form {
+.bouton-fermer:focus-visible {
+  outline: 2.5px solid #1A1A1A;
+  outline-offset: 2px;
+}
+
+.formulaire-tache {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.groupe-champ {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.label-champ {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1A1A1A;
+}
+
+.input-champ {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid #D4D4D4;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: #1A1A1A;
+  background-color: white;
+  transition: all 0.25s ease;
+}
+
+.input-champ::placeholder {
+  color: #9E9E9E;
+}
+
+.input-champ:hover {
+  border-color: #A8A8A8;
+}
+
+.input-champ:focus {
+  outline: none;
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.08);
+}
+
+.textarea-champ {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.input-avec-icone {
+  position: relative;
+}
+
+.icone-input {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #676767;
+  pointer-events: none;
+}
+
+.input-champ.avec-icone {
+  padding-left: 2.75rem;
+}
+
+.actions-formulaire {
   display: flex;
-  gap: 8px;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
-.assign-form .input {
-  flex: 1;
-}
-
-.task-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.comments-section {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
-}
-
-.comments-section h5 {
-  margin-top: 0;
-  color: #333;
-}
-
-.comments-list {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.comment {
-  padding: 8px;
-  margin-bottom: 8px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  font-size: 13px;
-}
-
-.comment small {
-  display: block;
-  color: #999;
-  margin-top: 4px;
-}
-
-.no-comments {
-  color: #999;
-  font-style: italic;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+.bouton-primaire,
+.bouton-secondaire {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 30px;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
   border-radius: 8px;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  flex: 1;
 }
 
-.modal-content h3 {
-  margin-top: 0;
-  color: #333;
+.bouton-primaire {
+  background-color: #1A1A1A;
+  color: white;
 }
 
-.modal-actions {
+.bouton-primaire:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+}
+
+.bouton-primaire:focus-visible {
+  outline: 3px solid rgba(26, 26, 26, 0.4);
+  outline-offset: 2px;
+}
+
+.bouton-secondaire {
+  background-color: #F9F9F9;
+  color: #676767;
+  border: 1.5px solid #D4D4D4;
+}
+
+.bouton-secondaire:hover {
+  background-color: #F0F0F0;
+  border-color: #A8A8A8;
+  color: #1A1A1A;
+}
+
+.bouton-secondaire:focus-visible {
+  outline: 2.5px solid #1A1A1A;
+  outline-offset: 2px;
+}
+
+/* Section tâches */
+.section-taches-manager {
+  margin-bottom: 2.5rem;
+}
+
+.entete-section {
   display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 20px;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge-compteur-section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.625rem;
+  background-color: #1A1A1A;
+  color: white;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.etat-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.icone-vide {
+  color: #D4D4D4;
+  margin-bottom: 1.5rem;
+}
+
+.etat-vide h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 0.5rem 0;
+}
+
+.etat-vide p {
+  font-size: 0.9375rem;
+  color: #676767;
+  margin: 0;
+}
+
+/* Liste des tâches manager */
+.liste-taches-manager {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.carte-tache-manager {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.carte-tache-manager:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: #E0E0E0;
+}
+
+.entete-tache-manager {
+  margin-bottom: 1rem;
+}
+
+.info-tache-principale {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.titre-tache-manager {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.badge-statut-tache {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.icone-statut-tache {
+  flex-shrink: 0;
+}
+
+.statut-non-valide {
+  background-color: #FFF3CD;
+  color: #856404;
+}
+
+.statut-non-valide .icone-statut-tache {
+  color: #FFC107;
+}
+
+.statut-en-cours {
+  background-color: #CCE5FF;
+  color: #004085;
+}
+
+.statut-en-cours .icone-statut-tache {
+  color: #0969DA;
+}
+
+.statut-completee {
+  background-color: #D4EDDA;
+  color: #155724;
+}
+
+.statut-completee .icone-statut-tache {
+  color: #28A745;
+}
+
+.statut-validee {
+  background-color: #D1ECF1;
+  color: #0C5460;
+}
+
+.statut-validee .icone-statut-tache {
+  color: #17A2B8;
+}
+
+.description-tache-manager {
+  color: #676767;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+  font-size: 0.9375rem;
+}
+
+.metadonnees-tache-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 1rem 0;
+  border-top: 1px solid #F0F0F0;
+  border-bottom: 1px solid #F0F0F0;
+  margin-bottom: 1rem;
+}
+
+.meta-item-manager {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #676767;
+}
+
+.meta-item-manager svg {
+  flex-shrink: 0;
+  color: #A0A0A0;
+}
+
+.meta-item-manager.deadline-manager {
+  color: #D32F2F;
+}
+
+.meta-item-manager.deadline-manager svg {
+  color: #D32F2F;
+}
+
+.meta-item-manager strong {
+  font-weight: 500;
+  color: #1A1A1A;
+}
+
+/* Section assignation */
+.section-assignation {
+  background-color: #F9F9F9;
+  padding: 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.titre-assignation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.titre-assignation svg {
+  color: #676767;
+}
+
+.liste-assignes {
+  margin-bottom: 1rem;
+}
+
+.aucun-assigne {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #A0A0A0;
+  font-style: italic;
+}
+
+.aucun-assigne svg {
+  flex-shrink: 0;
+  color: #D4D4D4;
+}
+
+.badges-assignes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.badge-assigne {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #E7F5FF;
+  color: #0969DA;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.nom-assigne {
+  font-weight: 500;
+}
+
+.bouton-retirer {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #0969DA;
+  border-radius: 4px;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.bouton-retirer:hover {
+  background-color: rgba(9, 105, 218, 0.2);
+  color: #044289;
+}
+
+.bouton-retirer:focus-visible {
+  outline: 2px solid #0969DA;
+  outline-offset: 1px;
+}
+
+.formulaire-assignation {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.select-utilisateur {
+  flex: 1;
+  padding: 0.625rem 0.875rem;
+  border: 1.5px solid #D4D4D4;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #1A1A1A;
+  background-color: white;
+  transition: all 0.25s ease;
+}
+
+.select-utilisateur:hover {
+  border-color: #A8A8A8;
+}
+
+.select-utilisateur:focus {
+  outline: none;
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.08);
+}
+
+.bouton-assigner {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1rem;
+  background-color: #1A1A1A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.bouton-assigner:hover:not(:disabled) {
+  background-color: #000000;
+}
+
+.bouton-assigner:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bouton-assigner:focus-visible {
+  outline: 2.5px solid rgba(26, 26, 26, 0.4);
+  outline-offset: 2px;
+}
+
+/* Actions tâche */
+.actions-tache-manager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.bouton-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.25s ease;
+}
+
+.bouton-action.success {
+  background-color: #2EA043;
+  color: white;
+}
+
+.bouton-action.success:hover {
+  background-color: #2C974B;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(46, 160, 67, 0.3);
+}
+
+.bouton-action.secondaire {
+  background-color: #F9F9F9;
+  color: #676767;
+  border: 1.5px solid #E0E0E0;
+}
+
+.bouton-action.secondaire:hover {
+  background-color: #F0F0F0;
+  border-color: #D0D0D0;
+  color: #1A1A1A;
+}
+
+.bouton-action.danger {
+  background-color: #FFEBEE;
+  color: #D32F2F;
+  border: 1.5px solid #FFCDD2;
+}
+
+.bouton-action.danger:hover {
+  background-color: #D32F2F;
+  color: white;
+  border-color: #D32F2F;
+}
+
+.bouton-action:focus-visible {
+  outline: 2.5px solid rgba(26, 26, 26, 0.4);
+  outline-offset: 2px;
+}
+
+/* Commentaires */
+.section-commentaires-manager {
+  border-top: 2px solid #F0F0F0;
+  padding-top: 1rem;
+}
+
+.titre-commentaires-manager {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  list-style: none;
+}
+
+.titre-commentaires-manager::-webkit-details-marker {
+  display: none;
+}
+
+.titre-commentaires-manager svg {
+  color: #676767;
+}
+
+.liste-commentaires-manager {
+  margin-top: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.aucun-commentaire-manager {
+  padding: 1rem;
+  text-align: center;
+  color: #A0A0A0;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+.commentaire-manager {
+  padding: 0.875rem;
+  background-color: #F9F9F9;
+  border-radius: 8px;
+  margin-bottom: 0.625rem;
+  font-size: 0.875rem;
+}
+
+.entete-commentaire-manager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.entete-commentaire-manager strong {
+  color: #1A1A1A;
+  font-weight: 600;
+}
+
+.entete-commentaire-manager time {
+  color: #A0A0A0;
+  font-size: 0.75rem;
+}
+
+.commentaire-manager p {
+  color: #676767;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Modal */
+.overlay-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+  backdrop-filter: blur(2px);
+}
+
+.conteneur-modal {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.entete-modal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.entete-modal h2 {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.bouton-fermer-modal {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #676767;
+  transition: all 0.25s ease;
+}
+
+.bouton-fermer-modal:hover {
+  background-color: #F9F9F9;
+  color: #1A1A1A;
+}
+
+.bouton-fermer-modal:focus-visible {
+  outline: 2.5px solid #1A1A1A;
+  outline-offset: 2px;
+}
+
+.formulaire-modal {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.actions-modal {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-active .conteneur-modal,
+.modal-fade-leave-active .conteneur-modal {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .conteneur-modal,
+.modal-fade-leave-to .conteneur-modal {
+  transform: translateY(20px) scale(0.95);
+  opacity: 0;
+}
+
+/* Responsive - Tablette */
+@media (max-width: 1024px) {
+  .grille-statistiques {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 640px) {
+  .conteneur-projet {
+    padding: 1.5rem 1rem;
+  }
+
+  .info-projet {
+    padding: 1.5rem;
+  }
+
+  .titre-projet {
+    font-size: 1.5rem;
+  }
+
+  .grille-statistiques {
+    grid-template-columns: 1fr;
+  }
+
+  .carte-formulaire,
+  .carte-tache-manager {
+    padding: 1.5rem;
+  }
+
+  .actions-formulaire,
+  .actions-tache-manager,
+  .actions-modal {
+    flex-direction: column;
+  }
+
+  .bouton-primaire,
+  .bouton-secondaire,
+  .bouton-action {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .info-tache-principale {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .badge-statut-tache {
+    align-self: flex-start;
+  }
+
+  .formulaire-assignation {
+    flex-direction: column;
+  }
+
+  .bouton-assigner {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .conteneur-modal {
+    padding: 1.5rem;
+  }
+
+  .entete-modal h2 {
+    font-size: 1.125rem;
+  }
+}
+
+/* Accessibilité */
+@media (prefers-contrast: high) {
+  .input-champ,
+  .select-utilisateur {
+    border-width: 2px;
+  }
+
+  .input-champ:focus,
+  .select-utilisateur:focus {
+    box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mode sombre */
+@media (prefers-color-scheme: dark) {
+  .page-projet-manager {
+    background-color: #0D0D0D;
+  }
+
+  .info-projet,
+  .carte-stat,
+  .carte-formulaire,
+  .carte-tache-manager,
+  .conteneur-modal {
+    background-color: #1F1F1F;
+  }
+
+  .titre-projet,
+  .titre-section,
+  .entete-formulaire h2,
+  .entete-modal h2,
+  .etat-vide h3,
+  .label-champ,
+  .titre-tache-manager,
+  .titre-assignation {
+    color: #F0F0F0;
+  }
+
+  .description-projet,
+  .etat-vide p,
+  .description-tache-manager {
+    color: #B0B0B0;
+  }
+
+  .bouton-retour {
+    background-color: #2D2D2D;
+    border-color: #444444;
+    color: #B0B0B0;
+  }
+
+  .bouton-retour:hover {
+    background-color: #3A3A3A;
+    color: #F0F0F0;
+  }
+
+  .carte-stat h3,
+  .label-stat,
+  .meta-item-manager {
+    color: #B0B0B0;
+  }
+
+  .valeur-principale,
+  .meta-item-manager strong {
+    color: #F0F0F0;
+  }
+
+  .barre-progression {
+    background-color: #2D2D2D;
+  }
+
+  .section-assignation {
+    background-color: #2D2D2D;
+  }
+
+  .aucun-assigne {
+    background-color: #1F1F1F;
+  }
+
+  .input-champ,
+  .select-utilisateur {
+    background-color: #2D2D2D;
+    border-color: #444444;
+    color: #F0F0F0;
+  }
+
+  .input-champ:hover,
+  .select-utilisateur:hover {
+    border-color: #555555;
+  }
+
+  .input-champ:focus,
+  .select-utilisateur:focus {
+    border-color: #F0F0F0;
+  }
+
+  .icone-input {
+    color: #B0B0B0;
+  }
+
+  .bouton-fermer,
+  .bouton-fermer-modal {
+    color: #B0B0B0;
+  }
+
+  .bouton-fermer:hover,
+  .bouton-fermer-modal:hover {
+    background-color: #2D2D2D;
+    color: #F0F0F0;
+  }
+
+  .bouton-secondaire,
+  .bouton-action.secondaire {
+    background-color: #2D2D2D;
+    border-color: #444444;
+    color: #B0B0B0;
+  }
+
+  .bouton-secondaire:hover,
+  .bouton-action.secondaire:hover {
+    background-color: #3A3A3A;
+    color: #F0F0F0;
+  }
+
+  .badge-compteur-section {
+    background-color: #F0F0F0;
+    color: #1A1A1A;
+  }
+
+  .commentaire-manager {
+    background-color: #2D2D2D;
+  }
+
+  .commentaire-manager p {
+    color: #B0B0B0;
+  }
+
+  .overlay-modal {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
 }
 </style>
