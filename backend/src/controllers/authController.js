@@ -33,8 +33,7 @@ const register = async (req, res) => {
     )
 
     const secret = process.env.JWT_SECRET
-    
-    // SÉCURITÉ : Vérifier que JWT_SECRET est configuré
+
     if (!secret || secret === "secret") {
         console.error("SECURITY ERROR: JWT_SECRET not configured!")
         return res.status(500).json({ error: "Server configuration error" })
@@ -72,7 +71,6 @@ const login = async (req, res) => {
 
     const secret = process.env.JWT_SECRET
     
-    // SÉCURITÉ : Vérifier que JWT_SECRET est configuré
     if (!secret || secret === "secret") {
         console.error("SECURITY ERROR: JWT_SECRET not configured!")
         return res.status(500).json({ error: "Server configuration error" })

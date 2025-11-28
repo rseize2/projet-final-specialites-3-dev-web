@@ -66,15 +66,12 @@ const updateTask = (req, res) => {
     const user = req.user
     const body = req.body
 
-    // Vérifier si l'utilisateur est manager du projet
     const isManager = db.prepare(
         "SELECT 1 FROM project_managers WHERE project_id = ? AND user_id = ?"
     ).get(row.project_id, user.id)
 
-    // Vérifier si l'utilisateur est assigné à la tâche
     const isAssigned = row.assigned_to === user.id
 
-    // CORRECTION : Seul un manager ou la personne assignée peut modifier
     if (!isManager && !isAssigned) {
         return res.status(403).json({ error: "Forbidden" })
     }
@@ -84,12 +81,10 @@ const updateTask = (req, res) => {
         return res.status(400).json({ error: "Invalid status" })
     }
 
-    // CORRECTION : Seul un manager peut valider une tâche
     if (body.status === "validée" && !isManager) {
         return res.status(403).json({ error: "Only managers can validate tasks" })
     }
 
-    // CORRECTION : Seul un manager peut assigner/réassigner
     if (body.assigned_to !== undefined && !isManager) {
         return res.status(403).json({ error: "Only managers can assign tasks" })
     }
@@ -130,7 +125,6 @@ const assignTask = (req, res) => {
         return res.status(404).json({ error: "Task not found" })
     }
 
-    // Si userId fourni, vérifier que l'utilisateur existe
     if (userId) {
         const user = db.prepare("SELECT id FROM users WHERE id = ?").get(userId)
         if (!user) {

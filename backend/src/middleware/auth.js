@@ -23,7 +23,6 @@ const authenticate = (req, res, next) => {
     try {
         const secret = process.env.JWT_SECRET
         
-        // SÉCURITÉ : Refuser si pas de JWT_SECRET configuré
         if (!secret || secret === "secret") {
             console.error("SECURITY ERROR: JWT_SECRET not configured or using default value!")
             return res.status(500).json({ error: "Server configuration error" })
