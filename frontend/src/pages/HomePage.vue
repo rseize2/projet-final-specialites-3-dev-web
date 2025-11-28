@@ -1,12 +1,7 @@
 <template>
   <div class="home-page">
-    <nav class="navbar">
-      <div class="navbar-brand">Gestion de Projets</div>
-      <div class="navbar-user">
-        <span>{{ currentUser.name }}</span>
-        <button @click="logout" class="btn btn-logout">Déconnexion</button>
-      </div>
-    </nav>
+    <!-- Navbar Component -->
+    <NavBar :utilisateur="currentUser" @deconnexion="logout" />
 
     <div class="container">
       <h1>Mes Projets</h1>
@@ -123,12 +118,16 @@
 </template>
 
 <script>
+import NavBar from '../components/NavBar.vue'
 import { useUserStore } from '../stores/userStore'
 import { useProjectStore } from '../stores/projectStore'
 import { useTaskStore } from '../stores/taskStore'
 
 export default {
   name: 'HomePage',
+  components: {
+    NavBar
+  },
   data() {
     return {
       userStore: useUserStore(),
@@ -230,42 +229,6 @@ export default {
   background-color: #f5f5f5;
 }
 
-.navbar {
-  background-color: #333;
-  color: white;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-brand {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.navbar-user {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.btn-logout {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-logout:hover {
-  background-color: #c82333;
-}
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -285,10 +248,10 @@ h1 {
 
 .btn-role {
   padding: 10px 20px;
-  border: 2px solid #2196F3;
+  border: 2px solid #1A1A1A;
   background-color: white;
-  color: #2196F3;
-  border-radius: 4px;
+  color: #1A1A1A;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -296,12 +259,12 @@ h1 {
 }
 
 .btn-role.active {
-  background-color: #2196F3;
+  background-color: #1A1A1A;
   color: white;
 }
 
 .btn-role:hover {
-  background-color: #2196F3;
+  background-color: #1A1A1A;
   color: white;
 }
 
@@ -340,8 +303,8 @@ h1 {
 
 .input:focus {
   outline: none;
-  border-color: #2196F3;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1);
 }
 
 textarea.input {
@@ -359,12 +322,12 @@ textarea.input {
 }
 
 .btn-primary {
-  background-color: #2196F3;
+  background-color: #1A1A1A;
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #0b7dda;
+  background-color: #000000;
 }
 
 .btn-danger {
@@ -403,7 +366,7 @@ textarea.input {
 
 .project-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-color: #2196F3;
+  border-color: #1A1A1A;
 }
 
 .project-card-header {
@@ -436,12 +399,12 @@ textarea.input {
 }
 
 .btn-take-role {
-  color: #2196F3;
-  border-color: #2196F3;
+  color: #1A1A1A;
+  border-color: #1A1A1A;
 }
 
 .btn-take-role:hover {
-  background-color: #e3f2fd;
+  background-color: #f5f5f5;
 }
 
 .btn-remove-role {
