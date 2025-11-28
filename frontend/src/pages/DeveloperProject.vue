@@ -1,10 +1,8 @@
 <template>
   <div class="page-projet-dev">
-    <!-- Navbar -->
     <NavBar :utilisateur="utilisateurActuel" @deconnexion="seDeconnecter" />
 
     <main class="conteneur-projet">
-      <!-- En-tête du projet -->
       <header class="entete-projet">
         <button 
           @click="retourAccueil" 
@@ -29,7 +27,6 @@
         </div>
       </header>
 
-      <!-- Section création de tâche -->
       <section class="section-creation-tache">
         <button 
           v-if="!afficherFormulaireCreation"
@@ -118,7 +115,6 @@
         </div>
       </section>
 
-      <!-- Mes tâches assignées -->
       <section class="section-taches" aria-labelledby="titre-mes-taches">
         <div class="entete-section">
           <h2 id="titre-mes-taches" class="titre-section">
@@ -151,7 +147,6 @@
         </div>
       </section>
 
-      <!-- Autres tâches du projet -->
       <section class="section-taches" aria-labelledby="titre-autres-taches">
         <div class="entete-section">
           <h2 id="titre-autres-taches" class="titre-section">
@@ -282,7 +277,6 @@ export default {
   padding: 2.5rem 1.5rem;
 }
 
-/* En-tête du projet */
 .entete-projet {
   margin-bottom: 2.5rem;
 }
@@ -350,7 +344,6 @@ export default {
   margin: 0;
 }
 
-/* Section création de tâche */
 .section-creation-tache {
   margin-bottom: 2.5rem;
 }
@@ -387,7 +380,6 @@ export default {
   outline-offset: 3px;
 }
 
-/* Carte formulaire */
 .carte-formulaire {
   background-color: white;
   padding: 2rem;
@@ -444,7 +436,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* Formulaire */
 .formulaire-tache {
   display: grid;
   gap: 1.25rem;
@@ -564,7 +555,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* Section tâches */
 .section-taches {
   margin-bottom: 2.5rem;
 }
@@ -604,7 +594,6 @@ export default {
   font-weight: 600;
 }
 
-/* État vide */
 .etat-vide {
   display: flex;
   flex-direction: column;
@@ -635,13 +624,11 @@ export default {
   margin: 0;
 }
 
-/* Liste des tâches */
 .liste-taches {
   display: grid;
   gap: 1.25rem;
 }
 
-/* Responsive - Tablette */
 @media (max-width: 768px) {
   .conteneur-projet {
     padding: 2rem 1.25rem;
@@ -656,7 +643,6 @@ export default {
   }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 640px) {
   .conteneur-projet {
     padding: 1.5rem 1rem;
@@ -700,7 +686,6 @@ export default {
   }
 }
 
-/* Responsive - Petits mobiles */
 @media (max-width: 375px) {
   .conteneur-projet {
     padding: 1.25rem 0.75rem;
@@ -715,7 +700,6 @@ export default {
   }
 }
 
-/* Accessibilité - Contraste élevé */
 @media (prefers-contrast: high) {
   .input-champ {
     border-width: 2px;
@@ -726,7 +710,6 @@ export default {
   }
 }
 
-/* Accessibilité - Mouvement réduit */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -737,7 +720,6 @@ export default {
   }
 }
 
-/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   .page-projet-dev {
     background-color: #0D0D0D;

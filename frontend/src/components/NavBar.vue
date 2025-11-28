@@ -1,7 +1,6 @@
 <template>
   <nav class="barre-navigation" role="navigation" aria-label="Navigation principale">
     <div class="conteneur-nav">
-      <!-- Logo / Titre -->
       <div class="section-marque">
         <router-link to="/home" class="lien-marque" aria-label="Retour à l'accueil">
           <svg class="icone-marque" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -14,7 +13,6 @@
         </router-link>
       </div>
 
-      <!-- Menu mobile toggle -->
       <button 
         class="bouton-menu-mobile"
         :class="{ 'menu-ouvert': menuMobileActif }"
@@ -28,7 +26,6 @@
         <span class="ligne-hamburger"></span>
       </button>
 
-      <!-- Section utilisateur (desktop & mobile) -->
       <div 
         class="section-utilisateur" 
         :class="{ 'mobile-visible': menuMobileActif }"
@@ -107,7 +104,6 @@ export default {
   },
   watch: {
     $route() {
-      // Fermer le menu mobile lors du changement de route
       this.menuMobileActif = false
     }
   }
@@ -134,7 +130,6 @@ export default {
   min-height: 70px;
 }
 
-/* Section marque */
 .section-marque {
   flex-shrink: 0;
 }
@@ -170,7 +165,6 @@ export default {
   white-space: nowrap;
 }
 
-/* Bouton menu mobile */
 .bouton-menu-mobile {
   display: none;
   flex-direction: column;
@@ -216,7 +210,6 @@ export default {
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Section utilisateur */
 .section-utilisateur {
   display: flex;
   align-items: center;
@@ -299,7 +292,6 @@ export default {
   flex-shrink: 0;
 }
 
-/* Responsive - Tablette */
 @media (max-width: 768px) {
   .conteneur-nav {
     padding: 0 1.25rem;
@@ -326,7 +318,6 @@ export default {
   }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 640px) {
   .conteneur-nav {
     padding: 0 1rem;
@@ -382,7 +373,6 @@ export default {
   }
 }
 
-/* Responsive - Petits mobiles */
 @media (max-width: 375px) {
   .texte-marque {
     font-size: 0.875rem;
@@ -398,7 +388,6 @@ export default {
   }
 }
 
-/* Mode contraste élevé */
 @media (prefers-contrast: high) {
   .barre-navigation {
     border-bottom-width: 2px;
@@ -418,7 +407,6 @@ export default {
   }
 }
 
-/* Réduction des animations */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -429,7 +417,6 @@ export default {
   }
 }
 
-/* Mode sombre (déjà sombre par défaut, mais on peut ajuster) */
 @media (prefers-color-scheme: dark) {
   .barre-navigation {
     background-color: #0D0D0D;

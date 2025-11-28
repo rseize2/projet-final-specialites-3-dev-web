@@ -1,10 +1,8 @@
 <template>
   <div class="page-projet-manager">
-    <!-- Navbar -->
     <NavBar :utilisateur="utilisateurActuel" @deconnexion="seDeconnecter" />
 
     <main class="conteneur-projet">
-      <!-- En-tête du projet -->
       <header class="entete-projet">
         <button 
           @click="retourAccueil" 
@@ -29,7 +27,6 @@
         </div>
       </header>
 
-      <!-- Tableau de bord -->
       <section class="section-dashboard" aria-labelledby="titre-dashboard">
         <h2 id="titre-dashboard" class="titre-section">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -42,7 +39,6 @@
         </h2>
 
         <div class="grille-statistiques">
-          <!-- Carte Progression -->
           <div class="carte-stat progression">
             <div class="entete-stat">
               <h3>Progression globale</h3>
@@ -60,7 +56,6 @@
             </div>
           </div>
 
-          <!-- Carte Statut -->
           <div class="carte-stat statut">
             <h3>Statut du projet</h3>
             <div class="badge-statut-projet" :class="classeStatutProjet">
@@ -71,7 +66,6 @@
             </div>
           </div>
 
-          <!-- Carte Tâches -->
           <div class="carte-stat taches">
             <h3>Répartition des tâches</h3>
             <div class="liste-stats">
@@ -100,7 +94,6 @@
         </div>
       </section>
 
-      <!-- Section création de tâche -->
       <section class="section-creation-tache">
         <button 
           v-if="!afficherFormulaireCreation"
@@ -189,7 +182,6 @@
         </div>
       </section>
 
-      <!-- Liste des tâches -->
       <section class="section-taches-manager" aria-labelledby="titre-taches-manager">
         <div class="entete-section">
           <h2 id="titre-taches-manager" class="titre-section">
@@ -217,7 +209,6 @@
             :key="tache.id"
             class="carte-tache-manager"
           >
-            <!-- En-tête tâche -->
             <header class="entete-tache-manager">
               <div class="info-tache-principale">
                 <h3 class="titre-tache-manager">{{ tache.title }}</h3>
@@ -230,10 +221,8 @@
               </div>
             </header>
 
-            <!-- Description -->
             <p class="description-tache-manager">{{ tache.description }}</p>
 
-            <!-- Métadonnées -->
             <div class="metadonnees-tache-manager">
               <div v-if="tache.deadline" class="meta-item-manager deadline-manager">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -251,7 +240,6 @@
               </div>
             </div>
 
-            <!-- Section assignation -->
             <div class="section-assignation">
               <h4 class="titre-assignation">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -318,7 +306,6 @@
               </form>
             </div>
 
-            <!-- Actions -->
             <div class="actions-tache-manager">
               <button
                 v-if="tache.status === 'Complétée'"
@@ -354,7 +341,6 @@
               </button>
             </div>
 
-            <!-- Commentaires -->
             <details class="section-commentaires-manager">
               <summary class="titre-commentaires-manager">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -385,7 +371,6 @@
       </section>
     </main>
 
-    <!-- Modal d'édition -->
     <transition name="modal-fade">
       <div v-if="idTacheEnEdition" class="overlay-modal" @click="annulerEdition">
         <div class="conteneur-modal" @click.stop>
@@ -632,7 +617,6 @@ export default {
   padding: 2.5rem 1.5rem;
 }
 
-/* En-tête du projet */
 .entete-projet {
   margin-bottom: 2.5rem;
 }
@@ -700,7 +684,6 @@ export default {
   margin: 0;
 }
 
-/* Dashboard */
 .section-dashboard {
   margin-bottom: 2.5rem;
 }
@@ -885,7 +868,6 @@ export default {
   background-color: #FEE2E2;
 }
 
-/* Section création (même style que DeveloperProject) */
 .section-creation-tache {
   margin-bottom: 2.5rem;
 }
@@ -1097,7 +1079,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* Section tâches */
 .section-taches-manager {
   margin-bottom: 2.5rem;
 }
@@ -1153,7 +1134,6 @@ export default {
   margin: 0;
 }
 
-/* Liste des tâches manager */
 .liste-taches-manager {
   display: grid;
   gap: 1.5rem;
@@ -1288,7 +1268,6 @@ export default {
   color: #1A1A1A;
 }
 
-/* Section assignation */
 .section-assignation {
   background-color: #F9F9F9;
   padding: 1.25rem;
@@ -1437,7 +1416,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* Actions tâche */
 .actions-tache-manager {
   display: flex;
   flex-wrap: wrap;
@@ -1499,7 +1477,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* Commentaires */
 .section-commentaires-manager {
   border-top: 2px solid #F0F0F0;
   padding-top: 1rem;
@@ -1570,7 +1547,6 @@ export default {
   line-height: 1.5;
 }
 
-/* Modal */
 .overlay-modal {
   position: fixed;
   inset: 0;
@@ -1673,14 +1649,12 @@ export default {
   opacity: 0;
 }
 
-/* Responsive - Tablette */
 @media (max-width: 1024px) {
   .grille-statistiques {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 640px) {
   .conteneur-projet {
     padding: 1.5rem 1rem;
@@ -1743,7 +1717,6 @@ export default {
   }
 }
 
-/* Accessibilité */
 @media (prefers-contrast: high) {
   .input-champ,
   .select-utilisateur {
@@ -1766,7 +1739,6 @@ export default {
   }
 }
 
-/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   .page-projet-manager {
     background-color: #0D0D0D;

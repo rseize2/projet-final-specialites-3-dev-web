@@ -1,17 +1,14 @@
 <template>
   <div class="page-accueil">
-    <!-- Navbar Component -->
     <NavBar :utilisateur="utilisateurActuel" @deconnexion="seDeconnecter" />
 
     <main class="conteneur-principal">
-      <!-- En-tête de la page -->
       <header class="entete-page">
         <div class="section-titre-page">
           <h1 class="titre-page">Mes Projets</h1>
           <p class="sous-titre-page">Gérez et suivez vos projets en temps réel</p>
         </div>
 
-        <!-- Sélecteur de rôle pour utilisateurs dual-role -->
         <div v-if="aDoubleRole" class="selecteur-mode" role="tablist" aria-label="Sélection du mode de vue">
           <button
             @click="modeVue = 'developer'"
@@ -42,7 +39,6 @@
         </div>
       </header>
 
-      <!-- Vue Développeur -->
       <section 
         v-if="modeVue === 'developer'" 
         id="panneau-developer"
@@ -93,7 +89,6 @@
         </div>
       </section>
 
-      <!-- Vue Manager -->
       <section 
         v-if="modeVue === 'manager'" 
         id="panneau-manager"
@@ -101,7 +96,6 @@
         aria-labelledby="mode-manager"
         class="vue-manager"
       >
-        <!-- Section création de projet -->
         <div class="section-creation">
           <button 
             v-if="!afficherFormulaireCreation"
@@ -169,7 +163,6 @@
           </div>
         </div>
 
-        <!-- Liste des projets -->
         <div v-if="tousProjets.length === 0" class="etat-vide">
           <svg class="icone-vide" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -360,7 +353,6 @@ export default {
       this.projectStore.loadProjects()
       this.taskStore.loadTasks()
 
-      // Définir le mode par défaut
       if (this.utilisateurActuel.roles.includes('manager') && !this.utilisateurActuel.roles.includes('developer')) {
         this.modeVue = 'manager'
       }
@@ -381,7 +373,6 @@ export default {
   padding: 2.5rem 1.5rem;
 }
 
-/* En-tête de la page */
 .entete-page {
   margin-bottom: 2.5rem;
 }
@@ -404,7 +395,6 @@ export default {
   margin: 0;
 }
 
-/* Sélecteur de mode */
 .selecteur-mode {
   display: inline-flex;
   gap: 0.75rem;
@@ -445,7 +435,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* État vide */
 .etat-vide {
   display: flex;
   flex-direction: column;
@@ -476,7 +465,6 @@ export default {
   margin: 0;
 }
 
-/* Section création */
 .section-creation {
   margin-bottom: 2.5rem;
 }
@@ -513,7 +501,6 @@ export default {
   outline-offset: 3px;
 }
 
-/* Formulaire création */
 .formulaire-creation {
   background-color: white;
   padding: 2rem;
@@ -672,14 +659,12 @@ export default {
   outline-offset: 2px;
 }
 
-/* Grille de projets */
 .grille-projets {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
-/* Carte projet */
 .carte-projet {
   background-color: white;
   border-radius: 12px;
@@ -875,7 +860,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* Responsive - Tablette */
 @media (max-width: 1024px) {
   .grille-projets {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -883,7 +867,6 @@ export default {
   }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 640px) {
   .conteneur-principal {
     padding: 1.5rem 1rem;
@@ -929,7 +912,6 @@ export default {
   }
 }
 
-/* Responsive - Petits mobiles */
 @media (max-width: 375px) {
   .conteneur-principal {
     padding: 1.25rem 0.75rem;
@@ -944,7 +926,6 @@ export default {
   }
 }
 
-/* Accessibilité - Contraste élevé */
 @media (prefers-contrast: high) {
   .carte-projet {
     border-width: 2px;
@@ -959,7 +940,6 @@ export default {
   }
 }
 
-/* Accessibilité - Mouvement réduit */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -970,7 +950,6 @@ export default {
   }
 }
 
-/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   .page-accueil {
     background-color: #0D0D0D;

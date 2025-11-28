@@ -10,12 +10,10 @@ import { useTaskStore } from './stores/taskStore'
 export default {
   name: 'App',
   setup() {
-    // Initialiser les stores
     const userStore = useUserStore()
     const projectStore = useProjectStore()
     const taskStore = useTaskStore()
 
-    // Charger les données depuis localStorage
     userStore.loadUsers()
     userStore.loadCurrentUser()
     projectStore.loadProjects()

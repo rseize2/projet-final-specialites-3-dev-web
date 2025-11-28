@@ -1,13 +1,11 @@
 <template>
   <div class="page-login">
     <div class="carte-login" role="main">
-      <!-- Section titre -->
       <header class="en-tete-page">
         <h1 class="titre-page">Connexion</h1>
         <p class="sous-titre-page">Saisissez vos identifiants pour accéder à votre compte.</p>
       </header>
 
-      <!-- Message erreur -->
       <div 
         v-if="erreurMessage" 
         class="notification-erreur"
@@ -17,9 +15,7 @@
         {{ erreurMessage }}
       </div>
 
-      <!-- Formulaire -->
       <form @submit.prevent="effectuerConnexion" novalidate class="form-login">
-        <!-- Email -->
         <div class="champ-formulaire">
           <label for="input-email" class="label-champ">
             Adresse email
@@ -37,7 +33,6 @@
           />
         </div>
 
-        <!-- Mot de passe -->
         <div class="champ-formulaire">
           <label for="input-password" class="label-champ">
             Mot de passe
@@ -71,7 +66,6 @@
           </div>
         </div>
 
-        <!-- Bouton submit -->
         <button 
           type="submit" 
           class="btn-submit"
@@ -88,7 +82,6 @@
         </button>
       </form>
 
-      <!-- Pied de page -->
       <footer class="pied-page">
         <p class="texte-pied">
           Vous n'avez pas encore de compte ?
@@ -128,18 +121,15 @@ export default {
     },
 
     async effectuerConnexion() {
-      // Réinitialisation de l'erreur
       this.erreurMessage = ''
       this.chargementActif = true
 
-      // Validation : champs vides
       if (!this.identifiants.email || !this.identifiants.motDePasse) {
         this.erreurMessage = 'Veuillez remplir tous les champs obligatoires'
         this.chargementActif = false
         return
       }
 
-      // Validation : format email
       const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!regexEmail.test(this.identifiants.email)) {
         this.erreurMessage = 'L\'adresse email saisie n\'est pas valide'
@@ -147,10 +137,8 @@ export default {
         return
       }
 
-      // Délai de simulation réseau
       await new Promise(resolve => setTimeout(resolve, 600))
 
-      // Tentative de connexion
       const reponse = this.userStore.login(
         this.identifiants.email, 
         this.identifiants.motDePasse
@@ -166,7 +154,6 @@ export default {
     }
   },
   mounted() {
-    // Redirection automatique si déjà connecté
     if (this.userStore.isAuthenticated()) {
       this.$router.push({ name: 'Home' })
     } else {
@@ -417,7 +404,6 @@ export default {
   border-radius: 5px;
 }
 
-/* Responsive - Tablette */
 @media (max-width: 768px) {
   .page-login {
     padding: 1.5rem 1.25rem;
@@ -428,7 +414,6 @@ export default {
   }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 640px) {
   .page-login {
     padding: 1.25rem;
@@ -477,7 +462,6 @@ export default {
   }
 }
 
-/* Responsive - Petits mobiles */
 @media (max-width: 375px) {
   .carte-login {
     padding: 2rem 1.5rem;
@@ -492,7 +476,6 @@ export default {
   }
 }
 
-/* Responsive - Mode paysage */
 @media (max-height: 600px) and (orientation: landscape) {
   .page-login {
     padding: 1.25rem;
@@ -526,7 +509,6 @@ export default {
   }
 }
 
-/* Accessibilité - Contraste élevé */
 @media (prefers-contrast: high) {
   .input-champ {
     border-width: 2px;
@@ -546,7 +528,6 @@ export default {
   }
 }
 
-/* Accessibilité - Mouvement réduit */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -557,7 +538,6 @@ export default {
   }
 }
 
-/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   .page-login {
     background-color: #0D0D0D;

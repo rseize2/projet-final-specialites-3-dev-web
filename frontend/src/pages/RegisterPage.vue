@@ -1,13 +1,11 @@
 <template>
   <div class="page-register">
     <div class="carte-register" role="main">
-      <!-- En-tête -->
       <header class="section-titre">
         <h1 class="titre-register">Inscription</h1>
         <p class="description-register">Créez votre compte pour commencer.</p>
       </header>
 
-      <!-- Notification erreur -->
       <div 
         v-if="notificationErreur" 
         class="banniere-erreur"
@@ -17,7 +15,6 @@
         {{ notificationErreur }}
       </div>
 
-      <!-- Notification succès -->
       <div 
         v-if="notificationSucces" 
         class="banniere-succes"
@@ -27,9 +24,7 @@
         {{ notificationSucces }}
       </div>
 
-      <!-- Formulaire -->
       <form @submit.prevent="creerCompte" novalidate class="form-register">
-        <!-- Nom complet -->
         <div class="groupe-input">
           <label for="input-nom-complet" class="etiquette-input">
             Nom complet
@@ -46,7 +41,6 @@
           />
         </div>
 
-        <!-- Email -->
         <div class="groupe-input">
           <label for="input-email-register" class="etiquette-input">
             Adresse email
@@ -68,7 +62,6 @@
           </p>
         </div>
 
-        <!-- Mot de passe -->
         <div class="groupe-input">
           <label for="input-mdp-register" class="etiquette-input">
             Mot de passe
@@ -107,7 +100,6 @@
           </p>
         </div>
 
-        <!-- Confirmation mot de passe -->
         <div class="groupe-input">
           <label for="input-confirm-mdp" class="etiquette-input">
             Confirmer le mot de passe
@@ -145,7 +137,6 @@
           </p>
         </div>
 
-        <!-- Rôles -->
         <div class="groupe-input">
           <fieldset class="fieldset-roles">
             <legend class="etiquette-input">
@@ -195,7 +186,6 @@
           </fieldset>
         </div>
 
-        <!-- Bouton submit -->
         <button 
           type="submit" 
           class="btn-creer-compte"
@@ -212,7 +202,6 @@
         </button>
       </form>
 
-      <!-- Footer -->
       <footer class="footer-register">
         <p class="texte-footer">
           Vous avez déjà un compte ?
@@ -282,7 +271,6 @@ export default {
         this.erreursFormulaire.passwordUtilisateur = ''
       }
 
-      // Revalidation de la confirmation
       if (this.formulaire.confirmPassword) {
         this.controlerConfirmation()
       }
@@ -299,21 +287,17 @@ export default {
     validerTout() {
       let estValide = true
 
-      // Contrôle email
       this.controlerEmail()
       if (this.erreursFormulaire.emailUtilisateur) estValide = false
 
-      // Contrôle mot de passe
       if (this.formulaire.passwordUtilisateur.length < 6) {
         this.erreursFormulaire.passwordUtilisateur = 'Le mot de passe doit contenir au moins 6 caractères'
         estValide = false
       }
 
-      // Contrôle confirmation
       this.controlerConfirmation()
       if (this.erreursFormulaire.confirmPassword) estValide = false
 
-      // Contrôle rôles
       if (this.formulaire.rolesUtilisateur.length === 0) {
         this.erreursFormulaire.rolesUtilisateur = 'Veuillez sélectionner au moins un rôle'
         estValide = false
@@ -328,7 +312,6 @@ export default {
       this.notificationErreur = ''
       this.notificationSucces = ''
 
-      // Validation complète
       if (!this.validerTout()) {
         this.notificationErreur = 'Veuillez corriger les erreurs dans le formulaire'
         return
@@ -336,7 +319,6 @@ export default {
 
       this.traitementEnCours = true
 
-      // Délai simulation
       await new Promise(resolve => setTimeout(resolve, 800))
 
       const reponseRegister = this.userStore.register(
@@ -351,7 +333,6 @@ export default {
       if (reponseRegister.success) {
         this.notificationSucces = 'Compte créé avec succès ! Connexion en cours...'
         
-        // Auto-connexion après création
         setTimeout(() => {
           const reponseLogin = this.userStore.login(
             this.formulaire.emailUtilisateur, 
@@ -368,7 +349,6 @@ export default {
     }
   },
   mounted() {
-    // Vérification authentification existante
     if (this.userStore.isAuthenticated()) {
       this.$router.push({ name: 'Home' })
     } else {
@@ -721,7 +701,6 @@ export default {
   border-radius: 5px;
 }
 
-/* Responsive - Tablette */
 @media (max-width: 768px) {
   .page-register {
     padding: 1.75rem 1.25rem;
@@ -732,7 +711,6 @@ export default {
   }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 640px) {
   .page-register {
     padding: 1.25rem;
@@ -781,7 +759,6 @@ export default {
   }
 }
 
-/* Responsive - Petits mobiles */
 @media (max-width: 375px) {
   .carte-register {
     padding: 2rem 1.5rem;
@@ -796,7 +773,6 @@ export default {
   }
 }
 
-/* Responsive - Mode paysage */
 @media (max-height: 600px) and (orientation: landscape) {
   .page-register {
     padding: 1.25rem;
@@ -830,7 +806,6 @@ export default {
   }
 }
 
-/* Accessibilité - Contraste élevé */
 @media (prefers-contrast: high) {
   .champ-input {
     border-width: 2px;
@@ -850,7 +825,6 @@ export default {
   }
 }
 
-/* Accessibilité - Mouvement réduit */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -861,7 +835,6 @@ export default {
   }
 }
 
-/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   .page-register {
     background-color: #0D0D0D;

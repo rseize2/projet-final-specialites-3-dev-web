@@ -5,7 +5,6 @@
     role="article"
     :aria-label="`Tâche: ${tache.title}`"
   >
-    <!-- En-tête de la carte -->
     <header class="entete-tache">
       <div class="info-principale">
         <h3 class="titre-tache">{{ tache.title }}</h3>
@@ -21,7 +20,6 @@
         </span>
       </div>
       
-      <!-- Badge d'assignation -->
       <div v-if="estAssigneUtilisateurActuel" class="badge-assigne">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -31,10 +29,8 @@
       </div>
     </header>
 
-    <!-- Description -->
     <p class="description-tache">{{ tache.description }}</p>
 
-    <!-- Métadonnées -->
     <div class="metadonnees-tache">
       <div v-if="tache.deadline" class="meta-item deadline">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -57,9 +53,7 @@
       </div>
     </div>
 
-    <!-- Actions principales -->
     <div class="actions-tache">
-      <!-- Bouton marquer comme complétée -->
       <button
         v-if="estAssigneUtilisateurActuel && tache.status === 'Non validé'"
         @click="marquerCompletee"
@@ -71,7 +65,6 @@
         <span>Marquer complétée</span>
       </button>
 
-      <!-- État complétée -->
       <div
         v-if="estAssigneUtilisateurActuel && tache.status === 'Complétée'"
         class="etat-completee"
@@ -83,7 +76,6 @@
         <span>En attente de validation</span>
       </div>
 
-      <!-- Bouton valider -->
       <button
         v-if="estManager && tache.status === 'Complétée'"
         @click="validerTache"
@@ -97,7 +89,6 @@
       </button>
     </div>
 
-    <!-- Actions secondaires -->
     <div class="actions-secondaires">
       <button @click="basculerCommentaires" class="bouton-secondaire">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -133,7 +124,6 @@
       </button>
     </div>
 
-    <!-- Section commentaires -->
     <transition name="slide-fade">
       <section v-if="afficherCommentaires" class="section-commentaires">
         <div class="liste-commentaires">
@@ -329,7 +319,6 @@ export default {
   background: linear-gradient(135deg, #F0FFF4 0%, #FFFFFF 100%);
 }
 
-/* En-tête */
 .entete-tache {
   margin-bottom: 1rem;
 }
@@ -415,7 +404,6 @@ export default {
   font-weight: 500;
 }
 
-/* Description */
 .description-tache {
   color: #676767;
   line-height: 1.6;
@@ -423,7 +411,6 @@ export default {
   font-size: 0.9375rem;
 }
 
-/* Métadonnées */
 .metadonnees-tache {
   display: flex;
   flex-direction: column;
@@ -465,7 +452,6 @@ export default {
   color: #A0A0A0;
 }
 
-/* Actions principales */
 .actions-tache {
   display: flex;
   flex-wrap: wrap;
@@ -528,7 +514,6 @@ export default {
   font-weight: 500;
 }
 
-/* Actions secondaires */
 .actions-secondaires {
   display: flex;
   flex-wrap: wrap;
@@ -585,7 +570,6 @@ export default {
   font-weight: 600;
 }
 
-/* Section commentaires */
 .section-commentaires {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
@@ -693,7 +677,6 @@ export default {
   margin: 0;
 }
 
-/* Formulaire commentaire */
 .formulaire-commentaire {
   margin-top: 1rem;
 }
@@ -759,7 +742,6 @@ export default {
   outline-offset: 2px;
 }
 
-/* Animations */
 .slide-fade-enter-active {
   transition: all 0.3s ease-out;
 }
@@ -778,7 +760,6 @@ export default {
   opacity: 0;
 }
 
-/* Responsive - Mobile */
 @media (max-width: 640px) {
   .carte-tache {
     padding: 1.25rem;
@@ -822,7 +803,6 @@ export default {
   }
 }
 
-/* Accessibilité - Contraste élevé */
 @media (prefers-contrast: high) {
   .carte-tache {
     border-width: 2px;
@@ -837,7 +817,6 @@ export default {
   }
 }
 
-/* Accessibilité - Mouvement réduit */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -848,7 +827,6 @@ export default {
   }
 }
 
-/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   .carte-tache {
     background-color: #1F1F1F;
