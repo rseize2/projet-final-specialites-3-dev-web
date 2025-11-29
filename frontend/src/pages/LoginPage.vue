@@ -24,7 +24,6 @@
         </button>
       </div>
 
-      <!-- Formulaire de connexion -->
       <form v-if="isLogin" @submit.prevent="handleLogin" class="form-animate" :class="{ shake: hasError }">
         <h2>Connexion</h2>
 
@@ -67,7 +66,6 @@
         </button>
       </form>
 
-      <!-- Formulaire d'inscription -->
       <form v-else @submit.prevent="handleRegister" class="form-animate" :class="{ shake: hasError }">
         <h2>Inscription</h2>
 
@@ -161,7 +159,6 @@
       </form>
     </div>
 
-    <!-- Toast notification -->
     <transition name="toast-slide">
       <div v-if="toast.show" :class="['toast', `toast-${toast.type}`]">
         {{ toast.message }}
@@ -241,7 +238,6 @@ export default {
       this.hasError = false
       this.isLoading = true
 
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500))
 
       const result = this.userStore.login(this.loginForm.email, this.loginForm.password)
@@ -265,7 +261,6 @@ export default {
       this.registerError = ''
       this.hasError = false
 
-      // Vérifier que les mots de passe correspondent
       if (this.registerForm.password !== this.registerForm.confirmPassword) {
         this.registerError = 'Les mots de passe ne correspondent pas'
         this.hasError = true
@@ -275,7 +270,6 @@ export default {
         return
       }
 
-      // Vérifier qu'au moins un rôle est sélectionné
       if (this.registerForm.roles.length === 0) {
         this.registerError = 'Veuillez sélectionner au moins un rôle'
         this.hasError = true
@@ -287,7 +281,6 @@ export default {
 
       this.isLoading = true
 
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500))
 
       const result = this.userStore.register(
@@ -301,7 +294,6 @@ export default {
 
       if (result.success) {
         this.showToast('Inscription réussie! Bienvenue', 'success')
-        // Connecter automatiquement après l'inscription
         const loginResult = this.userStore.login(this.registerForm.email, this.registerForm.password)
         if (loginResult.success) {
           setTimeout(() => {
@@ -319,11 +311,9 @@ export default {
   },
   mounted() {
     this.initDarkMode()
-    // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
     if (this.userStore.isAuthenticated()) {
       this.$router.push({ name: 'Home' })
     } else {
-      // Charger les utilisateurs depuis localStorage
       this.userStore.loadUsers()
     }
   }
@@ -594,7 +584,6 @@ h2 {
   transform: translateX(100px);
 }
 
-/* Responsive Design */
 @media (max-width: 480px) {
   .login-container {
     padding: 30px 20px;
